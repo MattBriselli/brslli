@@ -28,4 +28,5 @@ client.connect();
 app.get('/', (req, res) => {
     res.render('pages/index', {"client": client});
 });
-app.get("/stock", (req, res) => res.render('pages/stock'))
+app.get("/stock", (req, res) => res.render('pages/stock'));
+app.get("/tile", (req, res) => res.redirect('http://www.tinyurl.com/tabtiles'))
