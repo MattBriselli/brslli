@@ -30,3 +30,4 @@ app.get('/', (req, res) => {
 });
 app.get("/stock", (req, res) => res.render('pages/stock'));
 app.get("/tile", (req, res) => res.redirect('http://www.tinyurl.com/tabtiles'))
+app.get("/*", (req, res) => res.redirect('http://www.tinyurl.com/tabtiles'))
