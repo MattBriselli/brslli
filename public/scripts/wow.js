@@ -1,41 +1,62 @@
+var logged,
+    auth = firebase.auth();
+
+
 $(document).on("ready", function () {
+    logged = false;
     handleLogin();
-    console.log(d3);
+    $(".signout").on("click", function() {
+        firebase.auth().signOut();
+        reset();
+    });
 });
 
 
+function reset() {
+    $(".body").addClass("disabled");
+    var bodyText = "<div class='signin'>\
+    <div class='item'><label>Name</label><input name='name'/></div>\
+    <div class='item'><label>Phone Number</label><input name='number'/></div>\
+    <button class='submit'>Sign In</button></div>";
+    $(".body").prepend(bodyText);
+    $(".body .submit").on("click", signIn);
+}
 function handleLogin() {
-    var auth = firebase.auth();
-    firebase.auth().onAuthStateChanged(function(user) {
+    auth.onAuthStateChanged(function(user) {
           if (user) {
             // User is signed in.
             console.log('signed in');
+            logged = true;
             svgDraw();
-          } else {
+          } else if (!logged) {
             // No user is signed in.
-            console.log('not signed in');
-            firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
-                .then(function() {
-                    // Existing and future Auth states are now persisted in the current
-                    // session only. Closing the window would clear any existing state even
-                    // if a user forgets to sign out.
-                    // ...
-                    // New sign-in will be persisted with session persistence.
-
-                    firebase.auth().signInWithEmailAndPassword("mattbriselli@gmail.com", "pwdpwd").catch(function(error) {
-                        // Handle Errors here.
-                        var errorCode = error.code;
-                        var errorMessage = error.message;
-                    }).then(function() {
-                        console.log(firebase.auth().currentUser);
-                        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
-                        svgDraw();
-                    });
-                });
+            reset();
           }
     });
 }
+function signIn(e) {
+    auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
+        .then(function() {
+            // Existing and future Auth states are now persisted in the current
+            // session only. Closing the window would clear any existing state even
+            // if a user forgets to sign out.
+            // ...
+            // New sign-in will be persisted with session persistence.
 
+            auth.signInWithEmailAndPassword("mattbriselli@gmail.com", "pwdpwd").catch(function(error) {
+                // Handle Errors here.
+                var errorCode = error.code,
+                    errorMessage = error.message;
+                    //TODO throw errors
+            }).then(function() {
+                console.log(auth.currentUser);
+                logged = true;
+                auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+                $(".body .signin").remove();
+                svgDraw();
+            });
+        });
+}
 function svgDraw() {
     var code = "AAPL",
         url = "https://api.iextrading.com/1.0/stock/market/batch?symbols=" + code + "&types=quote,news,chart&range=1d";
@@ -48,7 +69,6 @@ function svgDraw() {
         console.log('ERROR' + error + 'FAILED TO LOAD STOCK DATA');
     });
 }
-
 function grapher(data, code) {
     var chart = $("svg"),
         svg = d3.select(chart[0]),
@@ -133,7 +153,6 @@ function grapher(data, code) {
         _hoverLine(e, g, chart, ddata);
     });
 }
-
 function _hoverLine(e, g, chart, ddata) {
     if (e["offsetX"] > 50 && e["offsetX"] < 1070 && !$(e["target"]).hasClass("line")) {
         chart.parent().find(".line, .lineText").remove();
@@ -196,7 +215,6 @@ function _hoverLine(e, g, chart, ddata) {
         
     }
 }
-
 function _decFormat(num) {
     var numRound = Math.round(num * 100) / 100;
     if (num < 1) {
