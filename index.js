@@ -3,6 +3,7 @@ const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Client } = require('pg');
 const app = express();
+const _ = require('underscore');
 
 const client = new Client({
     connectionString: process.env.DATABASE_URL,
@@ -26,7 +27,7 @@ client.connect();
 
 
 app.get('/', (req, res) => {
-    res.render('pages/index', {"client": client});
+    res.render('pages/index', {"client": client, "underscore": _ });
 });
 app.get("/stock", (req, res) => res.render('pages/stock'));
 app.get("/tile", (req, res) => res.redirect('http://www.tinyurl.com/tabtiles'))
