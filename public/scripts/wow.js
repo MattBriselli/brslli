@@ -1,7 +1,6 @@
 var logged,
     auth = firebase.auth();
 
-
 $(document).on("ready", function () {
     logged = false;
     handleLogin();
@@ -157,9 +156,7 @@ function grapher(data, code) {
 function _hoverLine(e, g, chart, ddata) {
     if (e["offsetX"] > 50 && e["offsetX"] < 1070 && !$(e["target"]).hasClass("line")) {
         chart.parent().find(".line, .lineText").remove();
-        var svgRect = chart[0].getBoundingClientRect(),
-            y = svgRect["height"] - svgRect["y"],
-            xPos = e["offsetX"] - 50,
+        var xPos = e["offsetX"] - 50,
             xPort = xPos/1000;
 
         var dataLine = g.append("line")
