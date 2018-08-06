@@ -163,7 +163,7 @@ function _hoverLine(e, g, chart, ddata) {
             .attr("x1", xPos)
             .attr("x2", xPos)
             .attr("y1", 0)
-            .attr("y2", 375)
+            .attr("y2", 380)
             .attr("stroke-width", "2px")
             .attr("class", "line");
         
