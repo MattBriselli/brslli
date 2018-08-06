@@ -73,8 +73,8 @@ function grapher(data, code) {
     var chart = $("svg"),
         svg = d3.select(chart[0]),
         margin = {top: 20, right: 30, bottom: 0, left: 50},
-        width =+ 1100 - margin.left - margin.right,
-        height =+ 550 - margin.top - margin.bottom,
+        width =+ 900 - margin.left - margin.right,
+        height =+ 400 - margin.top - margin.bottom,
         g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
         parseTime = d3.timeParse("%H:%M"),
         x = d3.scaleTime().rangeRound([0, width]),
@@ -154,7 +154,7 @@ function grapher(data, code) {
     });
 }
 function _hoverLine(e, g, chart, ddata) {
-    if (e["offsetX"] > 50 && e["offsetX"] < 1070 && !$(e["target"]).hasClass("line")) {
+    if (e["offsetX"] > 50 && e["offsetX"] < 870 && !$(e["target"]).hasClass("line")) {
         chart.parent().find(".line, .lineText").remove();
         var xPos = e["offsetX"] - 50,
             xPort = xPos/1000;
@@ -163,7 +163,7 @@ function _hoverLine(e, g, chart, ddata) {
             .attr("x1", xPos)
             .attr("x2", xPos)
             .attr("y1", 0)
-            .attr("y2", 525)
+            .attr("y2", 375)
             .attr("stroke-width", "2px")
             .attr("class", "line");
         
