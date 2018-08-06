@@ -13,6 +13,7 @@ $(document).on("ready", function () {
 
 
 function reset() {
+    $(".body .svg").html("<svg class='svg'></svg>");
     $(".body").addClass("disabled");
     var bodyText = "<div class='signin'>\
     <div class='item'><label>Name</label><input name='name'/></div>\
