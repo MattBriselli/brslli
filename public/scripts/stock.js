@@ -1,11 +1,13 @@
 var logged,
     signInText,
     logInText,
+    queried,
     auth = firebase.auth(),
     storeObj;
 
 $(document).on("ready", function () {
     logged = false;
+    queried = {};
     handleLogin();
     $(".entry").on("keyup", function(e) {
         if (e.keyCode == 13) {
@@ -145,6 +147,8 @@ function svgDraw(code) {
         url: url,
         type: "GET"
     }).done(function(data) {
+        queried[code] = data[code];
+        console.log(queried);
         grapher(data, code);
         dataInfo(data, code);
     }).fail(function(error) {
@@ -299,12 +303,18 @@ function favorite(e) {
     }
     if (storeObj["favorites"].indexOf(selected) == -1) {
         storeObj["favorites"].push(selected);
+        addFavorite(selected);
     } else {
         var ind = storeObj["favorites"].indexOf(selected);
         storeObj["favorites"].splice(ind, 1);
     }
     target.toggleClass("glyphicon-star glyphicon-star-empty");
     firebase.firestore().collection("users").doc(storeObj["uid"]).set(storeObj);
+}
+function addFavorite(stock) {
+    var stockRow = "<div class='stock'><div class='name'>" + stock + "</div>";
+    stockRow += "<div class='price'>" + queried[stock]["quote"]["close"] + "</div></div>";
+    $(".row .col-2 .right").append(stockRow);
 }
 function dataInfo(data, code) {
     var len = data[code]["chart"].length,

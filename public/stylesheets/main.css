@@ -1,7 +1,6 @@
 body {
     overflow-y: hidden;
 }
-
 .glyphicon {
     margin-right: 5px;
 }
@@ -15,7 +14,6 @@ body {
 .navbar {
     margin-bottom: 0;
 }
-
 .entry {
     height: 50px;
     width: 100%;
@@ -72,4 +70,13 @@ svg {
 .body .col-2 {
     height: 100%;
     background-color: #333333;
+    padding: 0;
+}
+.right .stock {
+    width: 100%;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+.right .stock div {
+    color: white;
 }
