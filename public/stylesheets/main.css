@@ -10,6 +10,9 @@ body {
 .col-sm-2 a {
     padding: 5px;
 }
+.col-10, .col-sm-8 {
+    padding: 0;
+}
 
 .navbar {
     margin-bottom: 0;
