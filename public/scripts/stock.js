@@ -8,6 +8,7 @@ $(document).on("ready", function () {
     handleLogin();
     $(".signout").on("click", function() {
         firebase.auth().signOut();
+        window.location.href = "/";
         reset();
     });
 });
