@@ -292,9 +292,19 @@ function hoverLine(e, g, chart, ddata) {
     }
 }
 function favorite(e) {
-    var target = $(e.currentTarget);
-    console.log(target, storeObj);
-    // firebase.firestore()
+    var target = $(e.currentTarget),
+        selected = target.prev().text();
+    if (!storeObj.hasOwnProperty("favorites")) {
+        storeObj["favorites"] = [];
+    }
+    if (storeObj["favorites"].indexOf(selected) == -1) {
+        storeObj["favorites"].push(selected);
+    } else {
+        var ind = storeObj["favorites"].indexOf(selected);
+        storeObj["favorites"].splice(ind, 1);
+    }
+    target.toggleClass("glyphicon-star glyphicon-star-empty");
+    firebase.firestore().collection("users").doc(storeObj["uid"]).set(storeObj);
 }
 function dataInfo(data, code) {
     var len = data[code]["chart"].length,
