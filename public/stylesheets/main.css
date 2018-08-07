@@ -20,3 +20,7 @@ svg.svg {
     transform: translate(-50%, -50%);
     padding: 20px;
 }
+.signin .error {
+    color: red;
+    font-weight: bold;
+}

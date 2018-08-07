@@ -15,11 +15,13 @@ function reset() {
     $(".body .svg").html("<svg class='svg'></svg>");
     $(".body").addClass("disabled");
     var bodyText = "<div class='signin'>\
-    <div class='item'><label>Name</label><input name='name'/></div>\
-    <div class='item'><label>Phone Number</label><input name='number'/></div>\
-    <button class='submit'>Sign In</button></div>";
+    <div class='item'><label>Email</label><input type='email' id='name'/></div>\
+    <div class='item'><label>Password</label><input type='password' id='password'/></div>\
+    <div class='item'><button class='submit'>Sign In</button></div>\
+    <div class='item'><button class='create'>Create a New Account</button></div></div>";
     $(".body").prepend(bodyText);
-    $(".body .submit").on("click", signIn);
+    $(".signin .submit").on("click", signIn);
+    $(".signin .create").on("click", create);
 }
 function handleLogin() {
     auth.onAuthStateChanged(function(user) {
@@ -34,28 +36,66 @@ function handleLogin() {
           }
     });
 }
-function signIn(e) {
-    auth.setPersistence(firebase.auth.Auth.Persistence.SESSION)
-        .then(function() {
-            // Existing and future Auth states are now persisted in the current
-            // session only. Closing the window would clear any existing state even
-            // if a user forgets to sign out.
-            // ...
-            // New sign-in will be persisted with session persistence.
+function create() {
+    $(".signin .item, .signin button").remove();
+    $(".signin").append("<div class='item'><label>Email</label><input type='email' id='name'/></div>");
+    $(".signin").append("<div class='item'><label>Password</label>\
+        <input minlength='6' required placeholder='6 characters min' type='password' id='password1'/></div>");
+    $(".signin").append("<div class='item'><label>Enter Password Again</label><input type='password' id='password2'/></div>");
+    $(".signin").append("<button class='createNew'>Create a New Account</button>");
+    $(".signin .createNew").on("click", function() {
+        if (createVerify($(".signin"))) {
+            createUser($(".signin #name").val(), $(".signin #password1").val());
+        } else if ($(".signin .error").length == 0) {
+            $(".signin").append("<div class='error'>Invalid Information</div>");
+        }
+    })
+}
+function createVerify(modal) {
+    var name = modal.find("#name"),
+        pwd1 = modal.find("#password1"),
+        pwd2 = modal.find("#password2");
 
-            auth.signInWithEmailAndPassword("mattbriselli@gmail.com", "pwdpwd").catch(function(error) {
-                // Handle Errors here.
-                var errorCode = error.code,
-                    errorMessage = error.message;
-                    //TODO throw errors
-            }).then(function() {
-                console.log(auth.currentUser);
-                logged = true;
-                auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
-                $(".body .signin").remove();
-                svgDraw();
-            });
+    if (name.val() === "" || pwd1.val().length < 6 || pwd1.val() !== pwd2.val()) {
+        return false;
+    }
+    if (name.val().indexOf("@") == -1 || name.val().indexOf(".") == -1) {
+        return false;
+    }
+    return true;
+}
+function createUser(name, pwd) {
+    auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function() {
+        auth.createUserWithEmailAndPassword(name, pwd).catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code,
+                errorMessage = error.message;
+                //TODO throw errors
+        }).then(function() {
+            console.log(auth.currentUser);
+            logged = true;
+            auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+            $(".body .signin").remove();
+            svgDraw();
         });
+    });
+}
+function signIn(e) {
+    var target = $(e.currentTarget);
+    auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function() {
+        auth.signInWithEmailAndPassword("mattbriselli@gmail.com", "pwdpwd").catch(function(error) {
+            // Handle Errors here.
+            var errorCode = error.code,
+                errorMessage = error.message;
+                //TODO throw errors
+        }).then(function() {
+            console.log(auth.currentUser);
+            logged = true;
+            auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+            $(".body .signin").remove();
+            svgDraw();
+        });
+    });
 }
 function svgDraw() {
     var code = "AAPL",
