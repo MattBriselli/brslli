@@ -10,7 +10,6 @@ $(document).on("ready", function () {
     });
 });
 
-
 function reset() {
     $(".body .svg").html("<svg class='svg'></svg>");
     $(".body").addClass("disabled");
@@ -27,7 +26,7 @@ function handleLogin() {
     auth.onAuthStateChanged(function(user) {
           if (user) {
             // User is signed in.
-            console.log('signed in');
+            console.log('signed in', auth.currentUser);
             logged = true;
             svgDraw();
           } else if (!logged) {
