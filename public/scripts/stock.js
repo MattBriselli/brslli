@@ -64,7 +64,7 @@ function createVerify(modal) {
     return true;
 }
 function createUser(name, pwd) {
-    auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function() {
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(function() {
         auth.createUserWithEmailAndPassword(name, pwd).catch(function(error) {
             // Handle Errors here.
             var errorCode = error.code,
@@ -73,7 +73,7 @@ function createUser(name, pwd) {
         }).then(function() {
             console.log(auth.currentUser);
             logged = true;
-            auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
             $(".body .signin").remove();
             svgDraw();
         });
@@ -81,7 +81,7 @@ function createUser(name, pwd) {
 }
 function signIn(e) {
     var target = $(e.currentTarget);
-    auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function() {
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(function() {
         auth.signInWithEmailAndPassword("mattbriselli@gmail.com", "pwdpwd").catch(function(error) {
             // Handle Errors here.
             var errorCode = error.code,
@@ -90,7 +90,7 @@ function signIn(e) {
         }).then(function() {
             console.log(auth.currentUser);
             logged = true;
-            auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
             $(".body .signin").remove();
             svgDraw();
         });
