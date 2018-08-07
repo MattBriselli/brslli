@@ -24,7 +24,7 @@ $(document).on("ready", function () {
 });
 
 function reset() {
-    $(".body .svg").html("<svg class='svg'></svg>");
+    $(".body .svg").html("");
     $("input, button, a").attr("disabled", "disabled");
     $(".body").addClass("disabled");
     signInText = "<div class='signin'>\
@@ -147,13 +147,13 @@ function svgDraw(code) {
 }
 function grapher(data, code) {
     var chart = $("svg");
-    chart.html("<svg class='svg'></svg>");
+    chart.html("");
 
     var parWid = chart.parent().width();
     chart.width(parWid);
 
     var svg = d3.select(chart[0]),
-        margin = {top: 20, right: 30, bottom: 0, left: 50},
+        margin = {top: 35, right: 30, bottom: 10, left: 50},
         width =+ parWid - margin.left - margin.right,
         height =+ 400 - margin.top - margin.bottom,
         g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
@@ -315,6 +315,8 @@ function dataInfo(data, code) {
     if (prefix !== "+") {
         $(".svg").find(".curve").attr("stroke", "red");
     }
+
+    $(".stockName").text(code);
 }
 function _decFormat(num) {
     var numRound = Math.round(num * 100) / 100;
