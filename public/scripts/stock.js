@@ -13,6 +13,7 @@ $(document).on("ready", function () {
             svgDraw(target.val().toUpperCase());
         }
     });
+    $(".nameRow span").on("click", favorite);
     $(window).resize(function() {
         console.log("now");
     })
@@ -233,10 +234,10 @@ function grapher(data, code) {
         .attr("d", line);
 
     chart.on("mouseover mousemove", function(e) {
-        _hoverLine(e, g, chart, ddata);
+        hoverLine(e, g, chart, ddata);
     });
 }
-function _hoverLine(e, g, chart, ddata) {
+function hoverLine(e, g, chart, ddata) {
     var parWid = chart.width();
     if (e["offsetX"] > 50 && (e["offsetX"] < parWid-30) && !$(e["target"]).hasClass("line")) {
         chart.parent().find(".line, .lineText").remove();
@@ -281,7 +282,7 @@ function _hoverLine(e, g, chart, ddata) {
             .attr("x", xPos - 14)
             .attr("y", -10)
             .attr("class", "lineText")
-            .text(_decFormat(dVal));
+            .text(decFormat(dVal));
 
         dataText.attr("fill", "black");
         dataLine.attr("stroke", "black");
@@ -311,8 +312,8 @@ function dataInfo(data, code) {
         changeP = 100 * (last["close"] / (first["open"]) -1);
 
     var prefix = (change > 0) ? "+" : "",
-        rightString = prefix + _decFormat(change)+" (";
-    rightString += prefix + _decFormat(changeP)+"%)";
+        rightString = prefix + decFormat(change)+" (";
+    rightString += prefix + decFormat(changeP)+"%)";
 
     if (prefix !== "+") {
         $(".svg").find(".curve").attr("stroke", "red");
@@ -321,7 +322,7 @@ function dataInfo(data, code) {
     $(".stockName").text(code);
     $(".nameRow span").show();
 }
-function _decFormat(num) {
+function decFormat(num) {
     var numRound = Math.round(num * 100) / 100;
     if (num < 1) {
         numRound = Math.round(num * 1000) / 1000;
