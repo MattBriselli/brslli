@@ -25,6 +25,7 @@ $(document).on("ready", function () {
 
 function reset() {
     $(".body .svg").html("<svg class='svg'></svg>");
+    $("input, button, a").attr("disabled", "disabled");
     $(".body").addClass("disabled");
     signInText = "<div class='signin'>\
         <div class='item'><label>Email</label><input type='email' id='name'/></div>\
@@ -93,6 +94,7 @@ function createUser(si, name, pwd) {
                 logged = true;
                 createDb(auth.currentUser);
                 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                $("input, button, a").removeAttr("disabled");
                 $(".body .signin").remove();
                 svgDraw("AAPL");
             }
@@ -124,6 +126,7 @@ function signIn(e) {
                 logged = true;
                 getDb(auth.currentUser);
                 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                $("input, button, a").removeAttr("disabled");
                 $(".body .signin").remove();
                 svgDraw("AAPL");
             }
