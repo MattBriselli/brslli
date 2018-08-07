@@ -6,6 +6,13 @@ var logged,
 $(document).on("ready", function () {
     logged = false;
     handleLogin();
+    $(".entry").on("keyup", function(e) {
+        if (e.keyCode == 13) {
+            //Enter Key
+            var target = $(e.currentTarget);
+            svgDraw(target.val());
+        }
+    });
     $(".signout").on("click", function() {
         auth.signOut();
         window.location.href = "/";
@@ -34,7 +41,7 @@ function handleLogin() {
             console.log('signed in', auth.currentUser);
             getDb(auth.currentUser);
             logged = true;
-            svgDraw();
+            svgDraw("AAPL");
         } else if (!logged) {
             // No user is signed in.
             reset();
@@ -84,7 +91,7 @@ function createUser(si, name, pwd) {
                 createDb(auth.currentUser);
                 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                 $(".body .signin").remove();
-                svgDraw();
+                svgDraw("AAPL");
             }
         });
     });
@@ -115,26 +122,27 @@ function signIn(e) {
                 getDb(auth.currentUser);
                 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                 $(".body .signin").remove();
-                svgDraw();
+                svgDraw("AAPL");
             }
         });
     });
 }
-function svgDraw() {
-    var code = "AAPL",
-        url = "https://api.iextrading.com/1.0/stock/market/batch?symbols=" + code + "&types=quote,news,chart&range=1d";
+function svgDraw(code) {
+    var url = "https://api.iextrading.com/1.0/stock/market/batch?symbols=" + code + "&types=quote,news,chart&range=1d";
     $.ajax({
         url: url,
         type: "GET"
     }).done(function(data) {
-        grapher(data, "AAPL");
+        grapher(data, code);
+        dataInfo(data, code);
     }).fail(function(error) {
         console.log('ERROR' + error + 'FAILED TO LOAD STOCK DATA');
     });
 }
 function grapher(data, code) {
-    var chart = $("svg"),
-        svg = d3.select(chart[0]),
+    var chart = $("svg");
+    chart.html("<svg class='svg'></svg>");
+    var svg = d3.select(chart[0]),
         margin = {top: 20, right: 30, bottom: 0, left: 50},
         width =+ 900 - margin.left - margin.right,
         height =+ 400 - margin.top - margin.bottom,
@@ -212,6 +220,8 @@ function grapher(data, code) {
         .attr("stroke-width", 3)
         .attr("d", line);
 
+    console.log(data);
+
     chart.on("mouseover mousemove", function(e) {
         _hoverLine(e, g, chart, ddata);
     });
@@ -270,6 +280,37 @@ function _hoverLine(e, g, chart, ddata) {
             dataText.attr("fill", "black");
             dataLine.attr("stroke", "black");
         // }
+    }
+}
+function dataInfo(data, code) {
+    var len = data[code]["chart"].length,
+        last = data[code]["chart"][len-1],
+        first = data[code]["chart"][0];
+
+    if (!first["open"] || first["open"] < 0) {
+        var ind = 0;
+        while (ind < len && (!data[code]["chart"][ind]["open"] || data[code]["chart"][ind]["open"] < 0)) {
+            ind++;
+        }
+        first = data[code]["chart"][ind];
+    }
+
+    if (!last["close"] || last["close"] < 0) {
+        while (len > 0 && (!last["close"] || last["close"] < 0)) {
+            len -= 1;
+            last = data[code]["chart"][len];
+        }
+    }
+
+    var change = (last["close"] - first["open"]),
+        changeP = 100 * (last["close"] / (first["open"]) -1);
+
+    var prefix = (change > 0) ? "+" : "",
+        rightString = prefix + _decFormat(change)+" (";
+    rightString += prefix + _decFormat(changeP)+"%)";
+
+    if (prefix !== "+") {
+        $(".svg").find(".curve").attr("stroke", "red");
     }
 }
 function _decFormat(num) {
