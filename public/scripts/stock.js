@@ -1,4 +1,6 @@
 var logged,
+    signInText,
+    logInText,
     auth = firebase.auth();
 
 $(document).on("ready", function () {
@@ -13,12 +15,13 @@ $(document).on("ready", function () {
 function reset() {
     $(".body .svg").html("<svg class='svg'></svg>");
     $(".body").addClass("disabled");
-    var bodyText = "<div class='signin'>\
-    <div class='item'><label>Email</label><input type='email' id='name'/></div>\
-    <div class='item'><label>Password</label><input type='password' id='password'/></div>\
-    <div class='item'><button class='submit'>Sign In</button></div>\
-    <div class='item'><button class='create'>Create a New Account</button></div></div>";
-    $(".body").prepend(bodyText);
+    signInText = "<div class='signin'>\
+        <div class='item'><label>Email</label><input type='email' id='name'/></div>\
+        <div class='item'><label>Password</label><input type='password' id='password'/></div>\
+        <div class='item'><button class='submit'>Sign In</button></div>\
+        <div class='item'><button class='create'>Create a New Account</button></div></div>";
+    $(".body").find(".signin").remove();
+    $(".body").prepend(signInText);
     $(".signin .submit").on("click", signIn);
     $(".signin .create").on("click", create);
 }
@@ -37,14 +40,17 @@ function handleLogin() {
 }
 function create() {
     $(".signin .item, .signin button").remove();
-    $(".signin").append("<div class='item'><label>Email</label><input type='email' id='name'/></div>");
-    $(".signin").append("<div class='item'><label>Password</label>\
-        <input minlength='6' required placeholder='6 characters min' type='password' id='password1'/></div>");
-    $(".signin").append("<div class='item'><label>Enter Password Again</label><input type='password' id='password2'/></div>");
-    $(".signin").append("<button class='createNew'>Create a New Account</button>");
+    logInText = "<div class='item'><label>Email</label><input type='email' id='name'/></div>\
+        <div class='item'><label>Password</label>\
+            <input minlength='6' required placeholder='6 characters min' type='password' id='password1'/></div>\
+            <div class='item'><label>Enter Password Again</label><input type='password' id='password2'/></div>\
+            <div class='item'><button class='createNew'>Create a New Account</button></div></div>\
+            <div class='item'><button class='signIn'>Sign In</button></div>";
+    $(".signin").append(logInText);
+    $(".signin .signIn").on("click", reset);
     $(".signin .createNew").on("click", function() {
         if (createVerify($(".signin"))) {
-            createUser($(".signin #name").val(), $(".signin #password1").val());
+            createUser($(".signin"), $(".signin #name").val(), $(".signin #password1").val());
         } else if ($(".signin .error").length == 0) {
             $(".signin").append("<div class='error'>Invalid Information</div>");
         }
@@ -63,36 +69,41 @@ function createVerify(modal) {
     }
     return true;
 }
-function createUser(name, pwd) {
+function createUser(si, name, pwd) {
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(function() {
         auth.createUserWithEmailAndPassword(name, pwd).catch(function(error) {
-            // Handle Errors here.
-            var errorCode = error.code,
-                errorMessage = error.message;
-                //TODO throw errors
+            si.find(".error").remove();
+            var err = "<div class='error'>" + error.message + "</div>";
+            si.append(err);
         }).then(function() {
-            console.log(auth.currentUser);
-            logged = true;
-            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-            $(".body .signin").remove();
-            svgDraw();
+            if (auth.currentUser != null) {
+                logged = true;
+                console.log(auth.currentUser.uid);
+                auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                $(".body .signin").remove();
+                svgDraw();
+            }
         });
     });
 }
 function signIn(e) {
-    var target = $(e.currentTarget);
+    var target = $(e.currentTarget),
+        si = target.parents(".signin"),
+        name = si.find("#name"),
+        pwd = si.find("#password");
+    console.log(name, pwd);
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(function() {
-        auth.signInWithEmailAndPassword("mattbriselli@gmail.com", "pwdpwd").catch(function(error) {
-            // Handle Errors here.
-            var errorCode = error.code,
-                errorMessage = error.message;
-                //TODO throw errors
+        auth.signInWithEmailAndPassword(name.val(), pwd.val()).catch(function(error) {
+            si.find(".error").remove();
+            var err = "<div class='error'>" + error.message + "</div>";
+            si.append(err);
         }).then(function() {
-            console.log(auth.currentUser);
-            logged = true;
-            auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-            $(".body .signin").remove();
-            svgDraw();
+            if (auth.currentUser != null) {
+                logged = true;
+                auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                $(".body .signin").remove();
+                svgDraw();
+            }
         });
     });
 }
