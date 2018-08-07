@@ -7,7 +7,7 @@ $(document).on("ready", function () {
     logged = false;
     handleLogin();
     $(".signout").on("click", function() {
-        firebase.auth().signOut();
+        auth.signOut();
         window.location.href = "/";
         reset();
     });
@@ -27,17 +27,18 @@ function reset() {
     $(".signin .create").on("click", create);
 }
 function handleLogin() {
+    // firebase.firestore().settings({"timestampsInSnapshots: true"});
     auth.onAuthStateChanged(function(user) {
-          if (user) {
+        if (user) {
             // User is signed in.
             console.log('signed in', auth.currentUser);
             getInfo(auth.currentUser);
             logged = true;
             svgDraw();
-          } else if (!logged) {
+        } else if (!logged) {
             // No user is signed in.
             reset();
-          }
+        }
     });
 }
 function create() {
@@ -80,7 +81,7 @@ function createUser(si, name, pwd) {
         }).then(function() {
             if (auth.currentUser != null) {
                 logged = true;
-                createUser(auth.currentUser);
+                createDb(auth.currentUser);
                 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                 $(".body .signin").remove();
                 svgDraw();
@@ -104,7 +105,6 @@ function signIn(e) {
         si = target.parents(".signin"),
         name = si.find("#name"),
         pwd = si.find("#password");
-    console.log(name, pwd);
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(function() {
         auth.signInWithEmailAndPassword(name.val(), pwd.val()).catch(function(error) {
             si.find(".error").remove();
