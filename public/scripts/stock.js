@@ -30,6 +30,7 @@ function handleLogin() {
           if (user) {
             // User is signed in.
             console.log('signed in', auth.currentUser);
+            getInfo(auth.currentUser);
             logged = true;
             svgDraw();
           } else if (!logged) {
@@ -78,12 +79,23 @@ function createUser(si, name, pwd) {
         }).then(function() {
             if (auth.currentUser != null) {
                 logged = true;
-                console.log(auth.currentUser.uid);
+                createUser(auth.currentUser);
                 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                 $(".body .signin").remove();
                 svgDraw();
             }
         });
+    });
+}
+function createDb(user) {
+    firebase.firestore().collection("users").doc(user.uid).set({
+        "uid": user.uid
+    });
+
+}
+function getInfo(user) {
+    firebase.firestore().collection("users").doc(user.uid).get().then(function(doc) {
+        console.log(doc, doc.data());
     });
 }
 function signIn(e) {
@@ -100,6 +112,7 @@ function signIn(e) {
         }).then(function() {
             if (auth.currentUser != null) {
                 logged = true;
+                getInfo(auth.currentUser);
                 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                 $(".body .signin").remove();
                 svgDraw();
