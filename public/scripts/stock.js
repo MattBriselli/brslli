@@ -13,6 +13,9 @@ $(document).on("ready", function () {
             svgDraw(target.val());
         }
     });
+    $(window).resize(function() {
+        console.log("now");
+    })
     $(".signout").on("click", function() {
         auth.signOut();
         window.location.href = "/";
@@ -142,9 +145,13 @@ function svgDraw(code) {
 function grapher(data, code) {
     var chart = $("svg");
     chart.html("<svg class='svg'></svg>");
+
+    var parWid = chart.parent().width();
+    chart.width(parWid);
+
     var svg = d3.select(chart[0]),
         margin = {top: 20, right: 30, bottom: 0, left: 50},
-        width =+ 900 - margin.left - margin.right,
+        width =+ parWid - margin.left - margin.right,
         height =+ 400 - margin.top - margin.bottom,
         g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
         parseTime = d3.timeParse("%H:%M"),
@@ -220,14 +227,13 @@ function grapher(data, code) {
         .attr("stroke-width", 3)
         .attr("d", line);
 
-    console.log(data);
-
     chart.on("mouseover mousemove", function(e) {
         _hoverLine(e, g, chart, ddata);
     });
 }
 function _hoverLine(e, g, chart, ddata) {
-    if (e["offsetX"] > 50 && e["offsetX"] < 870 && !$(e["target"]).hasClass("line")) {
+    var parWid = chart.width();
+    if (e["offsetX"] > 50 && (e["offsetX"] < parWid-30) && !$(e["target"]).hasClass("line")) {
         chart.parent().find(".line, .lineText").remove();
         var xPos = e["offsetX"] - 50,
             xPort = xPos/1000;
@@ -272,14 +278,8 @@ function _hoverLine(e, g, chart, ddata) {
             .attr("class", "lineText")
             .text(_decFormat(dVal));
 
-
-        // if (_prefs["dark"]) {
-            // dataText.attr("fill", "white");
-            // dataLine.attr("stroke", "white");
-        // } else {
-            dataText.attr("fill", "black");
-            dataLine.attr("stroke", "black");
-        // }
+        dataText.attr("fill", "black");
+        dataLine.attr("stroke", "black");
     }
 }
 function dataInfo(data, code) {
@@ -318,6 +318,5 @@ function _decFormat(num) {
     if (num < 1) {
         numRound = Math.round(num * 1000) / 1000;
     }
-    
     return numRound;
 }
