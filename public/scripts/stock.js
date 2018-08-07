@@ -1,7 +1,8 @@
 var logged,
     signInText,
     logInText,
-    auth = firebase.auth();
+    auth = firebase.auth(),
+    storeObj;
 
 $(document).on("ready", function () {
     logged = false;
@@ -104,14 +105,16 @@ function createUser(si, name, pwd) {
     });
 }
 function createDb(user) {
-    firebase.firestore().collection("users").doc(user.uid).set({
-        "uid": user.uid
-    });
+    storeObj = {"uid": user.uid};
+    firebase.firestore().collection("users").doc(user.uid).set(storeObj);
 }
 function getDb(user) {
     firebase.firestore().collection("users").doc(user.uid).get().then(function(doc) {
-        console.log(doc, doc.data());
+        storeObj = doc.data();
     });
+}
+function setDb(user) {
+
 }
 function signIn(e) {
     var target = $(e.currentTarget),
@@ -287,6 +290,11 @@ function hoverLine(e, g, chart, ddata) {
         dataText.attr("fill", "black");
         dataLine.attr("stroke", "black");
     }
+}
+function favorite(e) {
+    var target = $(e.currentTarget);
+    console.log(target, storeObj);
+    // firebase.firestore()
 }
 function dataInfo(data, code) {
     var len = data[code]["chart"].length,
