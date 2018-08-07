@@ -10,7 +10,7 @@ $(document).on("ready", function () {
         if (e.keyCode == 13) {
             //Enter Key
             var target = $(e.currentTarget);
-            svgDraw(target.val());
+            svgDraw(target.val().toUpperCase());
         }
     });
     $(window).resize(function() {
@@ -317,6 +317,7 @@ function dataInfo(data, code) {
     }
 
     $(".stockName").text(code);
+    $(".nameRow span").show();
 }
 function _decFormat(num) {
     var numRound = Math.round(num * 100) / 100;

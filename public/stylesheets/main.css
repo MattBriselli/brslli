@@ -51,12 +51,19 @@ body {
 .body .row {
     height: 100%;
 }
-.stockName {
+.nameRow {
     position: absolute;
     width: 100%;
     top: 10px;
     font-weight: bolder;
     font-size: 20px;
+}
+.nameRow span, .nameRow div {
+    display: inline-block;
+}
+.nameRow span {
+    display: none;
+    cursor: pointer;
 }
 svg {
     height: 450px;
@@ -64,4 +71,5 @@ svg {
 }
 .body .col-2 {
     height: 100%;
+    background-color: #333333;
 }
