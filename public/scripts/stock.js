@@ -32,7 +32,7 @@ function handleLogin() {
         if (user) {
             // User is signed in.
             console.log('signed in', auth.currentUser);
-            getInfo(auth.currentUser);
+            getDb(auth.currentUser);
             logged = true;
             svgDraw();
         } else if (!logged) {
@@ -93,9 +93,8 @@ function createDb(user) {
     firebase.firestore().collection("users").doc(user.uid).set({
         "uid": user.uid
     });
-
 }
-function getInfo(user) {
+function getDb(user) {
     firebase.firestore().collection("users").doc(user.uid).get().then(function(doc) {
         console.log(doc, doc.data());
     });
@@ -113,7 +112,7 @@ function signIn(e) {
         }).then(function() {
             if (auth.currentUser != null) {
                 logged = true;
-                getInfo(auth.currentUser);
+                getDb(auth.currentUser);
                 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
                 $(".body .signin").remove();
                 svgDraw();
@@ -231,7 +230,6 @@ function _hoverLine(e, g, chart, ddata) {
             .attr("stroke-width", "2px")
             .attr("class", "line");
         
-
         var dataIndex = Math.floor(xPort * ddata.length);
         if (dataIndex < 0) {
             dataIndex = 0;
@@ -247,7 +245,6 @@ function _hoverLine(e, g, chart, ddata) {
                     sec = dataIndex - off,
                     firstV = -1,
                     secV = -1;
-
                 off++;
                 if (first < ddata.length) {
                     firstV = ddata[first]["average"];
@@ -257,7 +254,6 @@ function _hoverLine(e, g, chart, ddata) {
                 }
                 dVal = Math.max(firstV, secV);
             }
-
         }
 
         var dataText = g.append("text")
@@ -274,7 +270,6 @@ function _hoverLine(e, g, chart, ddata) {
             dataText.attr("fill", "black");
             dataLine.attr("stroke", "black");
         // }
-        
     }
 }
 function _decFormat(num) {
