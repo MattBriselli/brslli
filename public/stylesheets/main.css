@@ -11,6 +11,22 @@ svg.svg {
     width: 900px;
 }
 
+.row {
+    margin: 0;
+}
+.col-sm-2 a {
+    padding: 5px;
+}
+
+.entry {
+    height: 50px;
+    width: 100%;
+    font-size: 24px;
+    font-weight: bold;
+    color: limegreen;
+    background-color: #666;
+}
+
 .signin {
     position: absolute;
     border: 1px solid black;
