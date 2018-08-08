@@ -255,7 +255,7 @@ function hoverLine(e, g, chart, ddata) {
             .attr("x1", xPos)
             .attr("x2", xPos)
             .attr("y1", 0)
-            .attr("y2", 380)
+            .attr("y2", 355)
             .attr("stroke-width", "2px")
             .attr("class", "line");
         
