@@ -109,14 +109,25 @@ function createUser(si, name, pwd) {
 function createDb(user) {
     storeObj = {"uid": user.uid};
     firebase.firestore().collection("users").doc(user.uid).set(storeObj);
+    loadFavorites();
 }
 function getDb(user) {
     firebase.firestore().collection("users").doc(user.uid).get().then(function(doc) {
         storeObj = doc.data();
+        loadFavorites();
     });
 }
 function setDb(user) {
 
+}
+function loadFavorites() {
+    if (storeObj.hasOwnProperty("favorites") && storeObj["favorites"].length > 0) {
+        for (index in storeObj["favorites"]) {
+            var stock = storeObj["favorites"][index];
+            console.log(stock);
+            //TODO SET FAVS
+        }
+    }
 }
 function signIn(e) {
     var target = $(e.currentTarget),
