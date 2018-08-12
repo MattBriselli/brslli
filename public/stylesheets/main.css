@@ -80,6 +80,10 @@ svg {
     border: 1px solid #ccc;
     cursor: pointer;
 }
+.right .stock.fav {
+    cursor: default;
+    color: white;
+}
 .right .stock div {
     color: white;
 }
