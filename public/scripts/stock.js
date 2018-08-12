@@ -48,8 +48,6 @@ function handleLogin() {
             // User is signed in.
             console.log('signed in', auth.currentUser);
             getDb(auth.currentUser);
-            logged = true;
-            svgDraw("AAPL");
         } else if (!logged) {
             // No user is signed in.
             reset();
@@ -114,20 +112,14 @@ function createDb(user) {
 function getDb(user) {
     firebase.firestore().collection("users").doc(user.uid).get().then(function(doc) {
         storeObj = doc.data();
-        loadFavorites();
+        logged = true;
+        console.log(storeObj);
+        var codes = storeObj["favorites"].join(",");
+        svgDraw(codes);
     });
 }
 function setDb(user) {
 
-}
-function loadFavorites() {
-    if (storeObj.hasOwnProperty("favorites") && storeObj["favorites"].length > 0) {
-        for (index in storeObj["favorites"]) {
-            var stock = storeObj["favorites"][index];
-            console.log(stock);
-            //TODO SET FAVS
-        }
-    }
 }
 function signIn(e) {
     var target = $(e.currentTarget),
@@ -152,16 +144,32 @@ function signIn(e) {
         });
     });
 }
+function stockQuery(code) {
+    // TODO make this a promise that has a done in svgDraw();
+    // var url = "https://api.iextrading.com/1.0/stock/market/batch?symbols=" + code + "&types=quote,news,chart&range=1d";
+    // $.ajax({
+    //     url: url,
+    //     type: "GET"
+    // }).done(function(data) {
+    // }
+}
 function svgDraw(code) {
     var url = "https://api.iextrading.com/1.0/stock/market/batch?symbols=" + code + "&types=quote,news,chart&range=1d";
     $.ajax({
         url: url,
         type: "GET"
     }).done(function(data) {
-        queried[code] = data[code];
-        console.log(queried);
-        grapher(data, code);
-        dataInfo(data, code);
+        var firstCode = storeObj["favorites"][0];
+        queried[firstCode] = data[firstCode];
+        var codeArr = code.split(",");
+        for (s in codeArr) {
+            queried[codeArr[s]] = data[codeArr[s]];
+
+        }
+        console.log(queried, data, firstCode);
+        grapher(data, firstCode);
+        dataInfo(data, firstCode);
+        loadFavorites();
     }).fail(function(error) {
         console.log('ERROR' + error + 'FAILED TO LOAD STOCK DATA');
     });
@@ -304,6 +312,17 @@ function hoverLine(e, g, chart, ddata) {
 
         dataText.attr("fill", "black");
         dataLine.attr("stroke", "black");
+    }
+}
+function loadFavorites() {
+    if (storeObj.hasOwnProperty("favorites") && storeObj["favorites"].length > 0) {
+        for (index in storeObj["favorites"]) {
+            var stock = storeObj["favorites"][index];
+            console.log(stock);
+            //TODO SET FAVS
+
+            addFavorite(stock);
+        }
     }
 }
 function favorite(e) {
