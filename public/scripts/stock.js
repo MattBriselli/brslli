@@ -150,15 +150,20 @@ function svgDraw(code) {
         url: url,
         type: "GET"
     }).done(function(data) {
-        var firstCode = storeObj["favorites"][0];
-        queried[firstCode] = data[firstCode];
-        var codeArr = code.split(",");
-        for (s in codeArr) {
-            queried[codeArr[s]] = data[codeArr[s]];
-
+        var c;
+        if (code.indexOf(",") != -1) {
+            //mulitcodes
+            var codeArr = code.split(",");
+            c = codeArr[0];
+            for (s in codeArr) {
+                queried[codeArr[s]] = data[codeArr[s]];
+            }
+        } else {
+            queried[code] = data[code];
+            c = code;
         }
-        grapher(data, firstCode);
-        dataInfo(data, firstCode);
+        grapher(data, c);
+        dataInfo(data, c);
         loadFavorites();
     }).fail(function(error) {
         console.log('ERROR' + error + 'FAILED TO LOAD STOCK DATA');
@@ -307,7 +312,10 @@ function hoverLine(e, g, chart, ddata) {
 function loadFavorites() {
     if (storeObj.hasOwnProperty("favorites") && storeObj["favorites"].length > 0) {
         for (index in storeObj["favorites"]) {
-            addFavorite(storeObj["favorites"][index]);
+            var code = storeObj["favorites"][index];
+            if ($(".right .stock."+code).length == 0) {
+                addFavorite(code);
+            }
         }
     }
 }
@@ -328,7 +336,7 @@ function favorite(e) {
     firebase.firestore().collection("users").doc(storeObj["uid"]).set(storeObj);
 }
 function addFavorite(stock) {
-    var stockRow = "<div class='stock'><div class='name'>" + stock + "</div>";
+    var stockRow = "<div class='stock "+stock+"'><div class='name'>" + stock + "</div>";
     stockRow += "<div class='price'>" + queried[stock]["quote"]["close"] + "</div></div>";
     $(".row .col-2 .right").append(stockRow);
 }
@@ -361,6 +369,12 @@ function dataInfo(data, code) {
 
     if (prefix !== "+") {
         $(".svg").find(".curve").attr("stroke", "red");
+    }
+
+    if (storeObj["favorites"].indexOf(code) != -1) {
+        $(".nameRow .glyphicon").addClass("glyphicon-star").removeClass("glyphicon-star-empty");
+    } else {
+        $(".nameRow .glyphicon").addClass("glyphicon-star-empty").removeClass("glyphicon-star");
     }
 
     $(".stockName").text(code);
