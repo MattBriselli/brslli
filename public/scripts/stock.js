@@ -45,11 +45,8 @@ function handleLogin() {
     // firebase.firestore().settings({"timestampsInSnapshots: true"});
     auth.onAuthStateChanged(function(user) {
         if (user) {
-            // User is signed in.
-            console.log('signed in', auth.currentUser);
             getDb(auth.currentUser);
         } else if (!logged) {
-            // No user is signed in.
             reset();
         }
     });
