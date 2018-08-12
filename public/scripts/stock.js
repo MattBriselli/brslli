@@ -144,15 +144,6 @@ function signIn(e) {
         });
     });
 }
-function stockQuery(code) {
-    // TODO make this a promise that has a done in svgDraw();
-    // var url = "https://api.iextrading.com/1.0/stock/market/batch?symbols=" + code + "&types=quote,news,chart&range=1d";
-    // $.ajax({
-    //     url: url,
-    //     type: "GET"
-    // }).done(function(data) {
-    // }
-}
 function svgDraw(code) {
     var url = "https://api.iextrading.com/1.0/stock/market/batch?symbols=" + code + "&types=quote,news,chart&range=1d";
     $.ajax({
@@ -166,7 +157,6 @@ function svgDraw(code) {
             queried[codeArr[s]] = data[codeArr[s]];
 
         }
-        console.log(queried, data, firstCode);
         grapher(data, firstCode);
         dataInfo(data, firstCode);
         loadFavorites();
@@ -317,11 +307,7 @@ function hoverLine(e, g, chart, ddata) {
 function loadFavorites() {
     if (storeObj.hasOwnProperty("favorites") && storeObj["favorites"].length > 0) {
         for (index in storeObj["favorites"]) {
-            var stock = storeObj["favorites"][index];
-            console.log(stock);
-            //TODO SET FAVS
-
-            addFavorite(stock);
+            addFavorite(storeObj["favorites"][index]);
         }
     }
 }
