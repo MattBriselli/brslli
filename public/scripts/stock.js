@@ -152,7 +152,7 @@ function svgDraw(code) {
             //mulitcodes
             var codeArr = code.split(",");
             c = codeArr[0];
-            for (s in codeArr) {
+            for (var s in codeArr) {
                 queried[codeArr[s]] = data[codeArr[s]];
             }
         } else {
@@ -257,8 +257,9 @@ function grapher(data, code) {
 }
 function hoverLine(e, g, chart, ddata) {
     var parWid = chart.width();
+        // parHeight = chart.height();
     if (e["offsetX"] > 50 && (e["offsetX"] < parWid-30) && !$(e["target"]).hasClass("line")) {
-        chart.parent().find(".line, .lineText").remove();
+        chart.parent().find(".line, .lineText, .circ").remove();
         var xPos = e["offsetX"] - 50,
             xPort = xPos/1000;
 
@@ -278,7 +279,7 @@ function hoverLine(e, g, chart, ddata) {
         }
 
         var dVal = ddata[dataIndex]["average"];
-        if (dVal == -1) {
+        if (dVal <= -1) {
             var off = 1;
             while (!dVal || dVal < 0) {
                 var first = dataIndex + off,
@@ -296,6 +297,19 @@ function hoverLine(e, g, chart, ddata) {
             }
         }
 
+        // var chartMin = parseFloat($(".yAxis .tick").first().find("text").text()),
+        //     chartMax = parseFloat($(".yAxis .tick").last().find("text").text()),
+        //     perc = (dVal - chartMin) / (chartMax - chartMin);
+
+        // console.log(perc, dVal, ddata[dataIndex]);
+
+        // var heightCirc = g.append("circle")
+        //     .attr("class", "circ")
+        //     .attr("cx", xPos)
+        //     .attr("cy", parHeight - (parHeight * perc))
+        //     .attr("r", "10");
+
+
         var dataText = g.append("text")
             .attr("x", xPos - 14)
             .attr("y", -10)
@@ -308,7 +322,7 @@ function hoverLine(e, g, chart, ddata) {
 }
 function loadFavorites() {
     if (storeObj.hasOwnProperty("favorites") && storeObj["favorites"].length > 0) {
-        for (index in storeObj["favorites"]) {
+        for (var index in storeObj["favorites"]) {
             var code = storeObj["favorites"][index];
             if ($(".right .stock."+code).length == 0) {
                 addFavorite(code);
@@ -358,11 +372,7 @@ function dataInfo(data, code) {
     }
 
     var change = (last["close"] - first["open"]),
-        changeP = 100 * (last["close"] / (first["open"]) -1);
-
-    var prefix = (change > 0) ? "+" : "",
-        rightString = prefix + decFormat(change)+" (";
-    rightString += prefix + decFormat(changeP)+"%)";
+        prefix = (change > 0) ? "+" : "";
 
     if (prefix !== "+") {
         $(".svg").find(".curve").attr("stroke", "red");
