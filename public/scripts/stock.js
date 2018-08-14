@@ -372,8 +372,13 @@ function dataInfo(data, code) {
         }
     }
 
-    var change = (last["close"] - first["open"]),
-        prefix = (change > 0) ? "+" : "";
+    var change = (last["close"] - first["open"]);
+
+    if (data[code]["quote"]["calculationPrice"] == "tops") {
+        change = data[code]["quote"]["change"];
+    }
+
+    var prefix = (change > 0) ? "+" : "";
 
     if (prefix !== "+") {
         $(".svg").find(".curve").attr("stroke", "red");
