@@ -298,19 +298,18 @@ function hoverLine(e, g, chart, ddata) {
             }
         }
 
-        var chartMin = parseFloat($(".yAxis .tick").first().find("text").text()),
-            chartMax = parseFloat($(".yAxis .tick").last().find("text").text()),
-            perc = (dVal - chartMin) / (chartMax - chartMin);
+        //TODO uncomment and fix the circle
+        // var chartMin = parseFloat($(".yAxis .tick").first().find("text").text()),
+        //     chartMax = parseFloat($(".yAxis .tick").last().find("text").text()),
+        //     perc = (dVal - chartMin) / (chartMax - chartMin);
 
-        console.log(perc, dVal, ddata[dataIndex]);
+        // console.log(perc, dVal, ddata[dataIndex]);
 
-        var heightCirc = g.append("circle")
-            .attr("class", "circ")
-            .attr("cx", xPos)
-            // .attr("cy", parHeight - (parHeight * perc))
-            .attr("cy", 355- (355 * perc))
-            .attr("r", "10");
-
+        // var heightCirc = g.append("circle")
+        //     .attr("class", "circ")
+        //     .attr("cx", xPos)
+        //     .attr("cy", 355- (355 * perc) + 5)
+        //     .attr("r", "10");
 
         var dataText = g.append("text")
             .attr("x", xPos - 14)
