@@ -192,6 +192,7 @@ function grapher(data, code) {
                 lastY = d.average;
                 return y(d.average);
             } else if (d.marketAverage > 0) {
+                console.log(d);
                 lastY = d.marketAverage;
                 return y(d.marketAverage);
             } else {
@@ -256,12 +257,12 @@ function grapher(data, code) {
     });
 }
 function hoverLine(e, g, chart, ddata) {
-    var parWid = chart.width();
-        // parHeight = chart.height();
+    var parWid = chart.width(),
+        parHeight = chart.height();
     if (e["offsetX"] > 50 && (e["offsetX"] < parWid-30) && !$(e["target"]).hasClass("line")) {
         chart.parent().find(".line, .lineText, .circ").remove();
         var xPos = e["offsetX"] - 50,
-            xPort = xPos/1000;
+            xPort = xPos/(parWid-80);
 
         var dataLine = g.append("line")
             .attr("x1", xPos)
@@ -297,17 +298,18 @@ function hoverLine(e, g, chart, ddata) {
             }
         }
 
-        // var chartMin = parseFloat($(".yAxis .tick").first().find("text").text()),
-        //     chartMax = parseFloat($(".yAxis .tick").last().find("text").text()),
-        //     perc = (dVal - chartMin) / (chartMax - chartMin);
+        var chartMin = parseFloat($(".yAxis .tick").first().find("text").text()),
+            chartMax = parseFloat($(".yAxis .tick").last().find("text").text()),
+            perc = (dVal - chartMin) / (chartMax - chartMin);
 
-        // console.log(perc, dVal, ddata[dataIndex]);
+        console.log(perc, dVal, ddata[dataIndex]);
 
-        // var heightCirc = g.append("circle")
-        //     .attr("class", "circ")
-        //     .attr("cx", xPos)
-        //     .attr("cy", parHeight - (parHeight * perc))
-        //     .attr("r", "10");
+        var heightCirc = g.append("circle")
+            .attr("class", "circ")
+            .attr("cx", xPos)
+            // .attr("cy", parHeight - (parHeight * perc))
+            .attr("cy", 355- (355 * perc))
+            .attr("r", "10");
 
 
         var dataText = g.append("text")
