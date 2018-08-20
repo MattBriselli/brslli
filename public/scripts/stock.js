@@ -119,9 +119,6 @@ function getDb(user) {
         svgDraw(codes);
     });
 }
-function setDb(user) {
-
-}
 function signIn(e) {
     var target = $(e.currentTarget),
         si = target.parents(".signin"),
