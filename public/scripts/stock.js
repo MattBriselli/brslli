@@ -364,7 +364,7 @@ function loadFavorites() {
                 addFavorite(code);
             }
         }
-        $(".row .col-2 .right .stock:not(.fav)").off("click").on("click", clickFavorite);
+        $(".row .col-2 .right .stock:not(.title)").off("click").on("click", clickFavorite);
     }
 }
 function favorite(e) {
