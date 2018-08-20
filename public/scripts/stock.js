@@ -365,7 +365,6 @@ function hoverLine(e, g, chart, ddata) {
         if (xPos - 35 + textWid >= parWid - 55) {
             //xPos - 35 is the textBox's left
             //parWid - 50 is the chart width minus the right margin
-            console.log('over');
             chart.find(".lineText").attr("x", parWid - 55 - textWid);
         }
 
@@ -379,6 +378,7 @@ function loadFavorites() {
                 addFavorite(code);
             }
         }
+        $(".row .col-2 .right .stock:not(.fav)").off("click").on("click", clickFavorite);
     }
 }
 function favorite(e) {
@@ -390,6 +390,7 @@ function favorite(e) {
     if (storeObj["favorites"].indexOf(selected) == -1) {
         storeObj["favorites"].push(selected);
         addFavorite(selected);
+        $(".row .col-2 .right .stock:not(.fav)").off("click").on("click", clickFavorite);
     } else {
         var ind = storeObj["favorites"].indexOf(selected);
         storeObj["favorites"].splice(ind, 1);
@@ -398,9 +399,14 @@ function favorite(e) {
     firebase.firestore().collection("users").doc(storeObj["uid"]).set(storeObj);
 }
 function addFavorite(stock) {
-    var stockRow = "<div class='stock "+stock+"'><div class='name'>" + stock + "</div>";
+    var stockRow = "<div class='stock "+stock+"' data-value='"+stock+"'><div class='name'>" + stock + "</div>";
     stockRow += "<div class='price'>" + queried[stock]["quote"]["close"] + "</div></div>";
-    $(".row .col-2 .right").append(stockRow);
+    if ($(".row .col-2 .right .stock." + stock).length == 0) {
+        $(".row .col-2 .right").append(stockRow);
+    }
+}
+function clickFavorite(e) {
+    codePost($(e.currentTarget).data("value"), queried);
 }
 function dataInfo(data, code) {
     var len = data[code]["chart"].length,
