@@ -142,29 +142,47 @@ function signIn(e) {
         });
     });
 }
-function svgDraw(code) {
-    var url = "https://api.iextrading.com/1.0/stock/market/batch?symbols=" + code + "&types=quote,news,chart&range=1d";
-    $.ajax({
-        url: url,
-        type: "GET"
-    }).done(function(data) {
-        if (code.indexOf(",") != -1) {
-            //mulitcodes
-            var codeArr = code.split(",");
-            var c = codeArr[0];
-            for (var s in codeArr) {
-                queried[codeArr[s]] = data[codeArr[s]];
-            }
-        } else {
-            queried[code] = data[code];
-            var c = code;
+function codeProcess(code) {
+    if (code.indexOf(",") != -1) {
+        code = code.split(",");
+    } else {
+        if (queried.hasOwnProperty(code)) {
+            return "";
         }
-        grapher(data, c);
-        dataInfo(data, c);
-        loadFavorites();
-    }).fail(function(error) {
-        console.log('ERROR' + error + 'FAILED TO LOAD STOCK DATA');
-    });
+    }
+    return code;
+}
+function svgDraw(code) {
+    var codeRed = codeProcess(code);
+    if (codeRed != "") {
+        var url = "https://api.iextrading.com/1.0/stock/market/batch?symbols=" + codeRed + "&types=quote,news,chart&range=1d";
+        $.ajax({
+            url: url,
+            type: "GET"
+        }).done(function(data) {
+            codePost(code, data);
+        }).fail(function(error) {
+            console.log('ERROR' + error + 'FAILED TO LOAD STOCK DATA');
+        });
+    } else {
+        codePost(code, queried);
+    }
+}
+function codePost(code, data) {
+    if (code.indexOf(",") != -1) {
+        //mulitcodes
+        var codeArr = code.split(",");
+        var c = codeArr[0];
+        for (var s in codeArr) {
+            queried[codeArr[s]] = data[codeArr[s]];
+        }
+    } else {
+        queried[code] = data[code];
+        var c = code;
+    }
+    grapher(data, c);
+    dataInfo(data, c);
+    loadFavorites();
 }
 function grapher(data, code) {
     var chart = $("svg");
