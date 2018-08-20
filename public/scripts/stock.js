@@ -12,8 +12,11 @@ $(document).on("ready", function () {
     $(".entry").on("keyup", function(e) {
         if (e.keyCode == 13) {
             //Enter Key
-            var target = $(e.currentTarget);
-            svgDraw(target.val().toUpperCase());
+            var target = $(e.currentTarget),
+                val = target.val().toUpperCase();
+            if (val.indexOf(",") == -1 && val.indexOf(" ") == -1) {
+                svgDraw(val);
+            }
         }
     });
     $(".nameRow span").on("click", favorite);
@@ -145,10 +148,13 @@ function signIn(e) {
 function codeProcess(code) {
     if (code.indexOf(",") != -1) {
         code = code.split(",");
-    } else {
-        if (queried.hasOwnProperty(code)) {
-            return "";
+        for (var i = 0; i < code.length; i++) {
+            if (queried.hasOwnProperty(code[i])) {
+                code.splice(i, 1);
+            }
         }
+    } else if (queried.hasOwnProperty(code)) {
+        return "";
     }
     return code;
 }
@@ -174,8 +180,8 @@ function svgDraw(code) {
 function codePost(code, data) {
     if (code.indexOf(",") != -1) {
         //mulitcodes
-        var codeArr = code.split(",");
-        var c = codeArr[0];
+        var codeArr = code.split(","),
+            c = codeArr[0];
         for (var s in codeArr) {
             queried[codeArr[s]] = data[codeArr[s]];
         }
