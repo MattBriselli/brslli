@@ -278,7 +278,7 @@ function grapher(data, code) {
         .attr("stroke-width", 3)
         .attr("d", line);
 
-    chart.on("mouseover mousemove", function(e) {
+    chart.off("mouseover mousemove").on("mouseover mousemove", function(e) {
         hoverLine(e, g, chart, data[code]);
     });
 }
@@ -289,9 +289,9 @@ function hoverLine(e, g, chart, ddata) {
         chart.parent().find(".line, .lineText, .circ").remove();
         var xPos = e["offsetX"] - 50,
             xPort = xPos/(parWid-80),
-            dchart = ddata["chart"];
-        
-        var dataIndex = Math.floor(xPort * dchart.length);
+            dchart = ddata["chart"],
+            dataIndex = Math.floor(xPort * dchart.length);
+
         if (dataIndex < 0) {
             dataIndex = 0;
         } else if (dataIndex >= dchart.length) {
@@ -316,19 +316,6 @@ function hoverLine(e, g, chart, ddata) {
                 dVal = Math.max(firstV, secV);
             }
         }
-
-        //TODO uncomment and fix the circle
-        // var chartMin = parseFloat($(".yAxis .tick").first().find("text").text()),
-        //     chartMax = parseFloat($(".yAxis .tick").last().find("text").text()),
-        //     perc = (dVal - chartMin) / (chartMax - chartMin);
-
-        // console.log(perc, dVal, dchart[dataIndex]);
-
-        // var heightCirc = g.append("circle")
-        //     .attr("class", "circ")
-        //     .attr("cx", xPos)
-        //     .attr("cy", 355- (355 * perc) + 5)
-        //     .attr("r", "10");
 
         var openP = ddata["quote"]["open"],
             curr = decFormat(dVal),
@@ -361,13 +348,14 @@ function hoverLine(e, g, chart, ddata) {
             .attr("z-index", 5)
             .text(curr + " (" + decFormat(diff)+ ")");
 
+        console.log(chart.find(".lineText")[0]);
+
         var textWid = chart.find(".lineText")[0].getBoundingClientRect()["width"];
         if (xPos - 35 + textWid >= parWid - 55) {
             //xPos - 35 is the textBox's left
             //parWid - 50 is the chart width minus the right margin
             chart.find(".lineText").attr("x", parWid - 55 - textWid);
         }
-
     }
 }
 function loadFavorites() {
@@ -411,27 +399,28 @@ function clickFavorite(e) {
 function dataInfo(data, code) {
     var len = data[code]["chart"].length,
         last = data[code]["chart"][len-1],
-        first = data[code]["chart"][0];
-
-    if (!first["open"] || first["open"] < 0) {
-        var ind = 0;
-        while (ind < len && (!data[code]["chart"][ind]["open"] || data[code]["chart"][ind]["open"] < 0)) {
-            ind++;
-        }
-        first = data[code]["chart"][ind];
-    }
-
-    if (!last["close"] || last["close"] < 0) {
-        while (len > 0 && (!last["close"] || last["close"] < 0)) {
-            len -= 1;
-            last = data[code]["chart"][len];
-        }
-    }
-
-    var change = (last["close"] - first["open"]);
+        first = data[code]["chart"][0],
+        change;
 
     if (data[code]["quote"]["calculationPrice"] == "tops") {
         change = data[code]["quote"]["change"];
+    } else {
+        if (!first["open"] || first["open"] < 0) {
+            var ind = 0;
+            while (ind < len && (!data[code]["chart"][ind]["open"] || data[code]["chart"][ind]["open"] < 0)) {
+                ind++;
+            }
+            first = data[code]["chart"][ind];
+        }
+
+        if (!last["close"] || last["close"] < 0) {
+            while (len > 0 && (!last["close"] || last["close"] < 0)) {
+                len -= 1;
+                last = data[code]["chart"][len];
+            }
+        }
+
+        change = (last["close"] - first["open"]);
     }
 
     var prefix = (change > 0) ? "+" : "";
