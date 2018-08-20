@@ -317,7 +317,7 @@ function hoverLine(e, g, chart, ddata) {
             }
         }
 
-        var dataLine = g.append("line")
+        g.append("line")
             .attr("x1", xPos)
             .attr("x2", xPos)
             .attr("y1", 0)
@@ -326,12 +326,14 @@ function hoverLine(e, g, chart, ddata) {
             .attr("stroke-width", "2px")
             .attr("class", "line");
 
-        var dataText = g.append("text")
+        g.append("text")
             .attr("x", xPos - 35)
             .attr("y", -10)
             .attr("class", "lineText")
             .attr("fill", color)
+            .attr("z-index", 5)
             .text(curr + " (" + decFormat(diff)+ ")");
+
     }
 }
 function loadFavorites() {
