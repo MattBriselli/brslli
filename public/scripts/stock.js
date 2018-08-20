@@ -361,6 +361,14 @@ function hoverLine(e, g, chart, ddata) {
             .attr("z-index", 5)
             .text(curr + " (" + decFormat(diff)+ ")");
 
+        var textWid = chart.find(".lineText")[0].getBoundingClientRect()["width"];
+        if (xPos - 35 + textWid >= parWid - 55) {
+            //xPos - 35 is the textBox's left
+            //parWid - 50 is the chart width minus the right margin
+            console.log('over');
+            chart.find(".lineText").attr("x", parWid - 55 - textWid);
+        }
+
     }
 }
 function loadFavorites() {
