@@ -252,7 +252,7 @@ function grapher(data, code) {
         .attr("d", line);
 
     chart.on("mouseover mousemove", function(e) {
-        hoverLine(e, g, chart, ddata);
+        hoverLine(e, g, chart, data[code]);
     });
 }
 function hoverLine(e, g, chart, ddata) {
@@ -261,24 +261,17 @@ function hoverLine(e, g, chart, ddata) {
     if (e["offsetX"] > 50 && (e["offsetX"] < parWid-30) && !$(e["target"]).hasClass("line")) {
         chart.parent().find(".line, .lineText, .circ").remove();
         var xPos = e["offsetX"] - 50,
-            xPort = xPos/(parWid-80);
-
-        var dataLine = g.append("line")
-            .attr("x1", xPos)
-            .attr("x2", xPos)
-            .attr("y1", 0)
-            .attr("y2", 355)
-            .attr("stroke-width", "2px")
-            .attr("class", "line");
+            xPort = xPos/(parWid-80),
+            dchart = ddata["chart"];
         
-        var dataIndex = Math.floor(xPort * ddata.length);
+        var dataIndex = Math.floor(xPort * dchart.length);
         if (dataIndex < 0) {
             dataIndex = 0;
-        } else if (dataIndex >= ddata.length) {
-            dataIndex = ddata.length - 1;
+        } else if (dataIndex >= dchart.length) {
+            dataIndex = dchart.length - 1;
         }
 
-        var dVal = ddata[dataIndex]["average"];
+        var dVal = dchart[dataIndex]["average"];
         if (dVal <= -1) {
             var off = 1;
             while (!dVal || dVal < 0) {
@@ -287,11 +280,11 @@ function hoverLine(e, g, chart, ddata) {
                     firstV = -1,
                     secV = -1;
                 off++;
-                if (first < ddata.length) {
-                    firstV = ddata[first]["average"];
+                if (first < dchart.length) {
+                    firstV = dchart[first]["average"];
                 }
                 if (sec > 0) {
-                    secV = ddata[sec]["average"];
+                    secV = dchart[sec]["average"];
                 }
                 dVal = Math.max(firstV, secV);
             }
@@ -302,7 +295,7 @@ function hoverLine(e, g, chart, ddata) {
         //     chartMax = parseFloat($(".yAxis .tick").last().find("text").text()),
         //     perc = (dVal - chartMin) / (chartMax - chartMin);
 
-        // console.log(perc, dVal, ddata[dataIndex]);
+        // console.log(perc, dVal, dchart[dataIndex]);
 
         // var heightCirc = g.append("circle")
         //     .attr("class", "circ")
@@ -310,14 +303,35 @@ function hoverLine(e, g, chart, ddata) {
         //     .attr("cy", 355- (355 * perc) + 5)
         //     .attr("r", "10");
 
+        var openP = ddata["quote"]["open"],
+            curr = decFormat(dVal),
+            diff = (curr - openP),
+            color = "black";
+            
+        if (openP && curr) {
+            if (diff < 0) {
+                color = "red";
+            } else if (diff > 0) {
+                //same price will use default colors
+                color = "green";
+            }
+        }
+
+        var dataLine = g.append("line")
+            .attr("x1", xPos)
+            .attr("x2", xPos)
+            .attr("y1", 0)
+            .attr("y2", 355)
+            .attr("stroke", color)
+            .attr("stroke-width", "2px")
+            .attr("class", "line");
+
         var dataText = g.append("text")
-            .attr("x", xPos - 14)
+            .attr("x", xPos - 35)
             .attr("y", -10)
             .attr("class", "lineText")
-            .text(decFormat(dVal));
-
-        dataText.attr("fill", "black");
-        dataLine.attr("stroke", "black");
+            .attr("fill", color)
+            .text(curr + " (" + decFormat(diff)+ ")");
     }
 }
 function loadFavorites() {
