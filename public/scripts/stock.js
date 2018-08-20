@@ -348,8 +348,6 @@ function hoverLine(e, g, chart, ddata) {
             .attr("z-index", 5)
             .text(curr + " (" + decFormat(diff)+ ")");
 
-        console.log(chart.find(".lineText")[0]);
-
         var textWid = chart.find(".lineText")[0].getBoundingClientRect()["width"];
         if (xPos - 35 + textWid >= parWid - 55) {
             //xPos - 35 is the textBox's left
