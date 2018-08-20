@@ -111,7 +111,11 @@ function getDb(user) {
         storeObj = doc.data();
         logged = true;
         console.log(storeObj);
-        var codes = storeObj["favorites"].join(",");
+        if (storeObj["favorites"].length > 0) {
+            var codes = storeObj["favorites"].join(",");
+        } else {
+            var codes = "AAPL";
+        }
         svgDraw(codes);
     });
 }
@@ -147,17 +151,16 @@ function svgDraw(code) {
         url: url,
         type: "GET"
     }).done(function(data) {
-        var c;
         if (code.indexOf(",") != -1) {
             //mulitcodes
             var codeArr = code.split(",");
-            c = codeArr[0];
+            var c = codeArr[0];
             for (var s in codeArr) {
                 queried[codeArr[s]] = data[codeArr[s]];
             }
         } else {
             queried[code] = data[code];
-            c = code;
+            var c = code;
         }
         grapher(data, c);
         dataInfo(data, c);
@@ -192,7 +195,6 @@ function grapher(data, code) {
                 lastY = d.average;
                 return y(d.average);
             } else if (d.marketAverage > 0) {
-                console.log(d);
                 lastY = d.marketAverage;
                 return y(d.marketAverage);
             } else {
@@ -395,7 +397,7 @@ function dataInfo(data, code) {
 }
 function decFormat(num) {
     var numRound = Math.round(num * 100) / 100;
-    if (num < 1) {
+    if (num < 0.1) {
         numRound = Math.round(num * 1000) / 1000;
     }
     return numRound;
