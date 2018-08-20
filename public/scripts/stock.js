@@ -160,9 +160,12 @@ function svgDraw(code) {
             url: url,
             type: "GET"
         }).done(function(data) {
-            codePost(code, data);
-        }).fail(function(error) {
-            console.log('ERROR' + error + 'FAILED TO LOAD STOCK DATA');
+            if (!$.isEmptyObject(data)) {
+                codePost(code, data);
+            } else {
+                //TODO handle wrong case
+                console.log('wrong');
+            }
         });
     } else {
         codePost(code, queried);
