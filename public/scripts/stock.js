@@ -228,59 +228,61 @@ function grapher(data, code) {
 
     var ddata = data[code]["chart"];
 
-    x.domain(d3.extent(ddata, function(d) { return parseTime(d.minute); }));
-    y.domain(d3.extent(ddata, function(d) {
-        if (d.average > 0) {
-            lastY = d.average;
-            return d.average;
-        } else if (d.marketAverage > 0) {
-            lastY = d.marketAverage;
-            return d.marketAverage;
-        } else {
-            return lastY;
-        }
-    }));
+    if (ddata && ddata.length != 0)  {
+        x.domain(d3.extent(ddata, function(d) { return parseTime(d.minute); }));
+        y.domain(d3.extent(ddata, function(d) {
+            if (d.average > 0) {
+                lastY = d.average;
+                return d.average;
+            } else if (d.marketAverage > 0) {
+                lastY = d.marketAverage;
+                return d.marketAverage;
+            } else {
+                return lastY;
+            }
+        }));
 
 
-    g.append("g")
-        .attr("transform", "translate(0," + height + ")")
-        .call( d3.axisBottom(x).tickArguments([5]) )
-        .classed("xAxis", true)
-        .select(".domain")
-            .remove();
+        g.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call( d3.axisBottom(x).tickArguments([5]) )
+            .classed("xAxis", true)
+            .select(".domain")
+                .remove();
 
-    g.append("g").call(d3.axisLeft(y).tickArguments([8]))
-        .classed("yAxis", true)
-        .append("text")
-            .attr("fill", "white")
-            .attr("stroke", "white")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", "0.71em")
-            .attr("text-anchor", "end");
+        g.append("g").call(d3.axisLeft(y).tickArguments([8]))
+            .classed("yAxis", true)
+            .append("text")
+                .attr("fill", "white")
+                .attr("stroke", "white")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", "0.71em")
+                .attr("text-anchor", "end");
 
-    var xTicks = $(chart).find(".xAxis .tick");
-    if (xTicks.length > 8) {
-        for (var i = 0; i < xTicks.length; i++) {
-            if (i % 2 == 0) {
-                $(xTicks[i]).remove();
+        var xTicks = $(chart).find(".xAxis .tick");
+        if (xTicks.length > 8) {
+            for (var i = 0; i < xTicks.length; i++) {
+                if (i % 2 == 0) {
+                    $(xTicks[i]).remove();
+                }
             }
         }
+
+        g.append("path")
+            .datum(ddata)
+            .attr("class", "curve")
+            .attr("fill", "none")
+            .attr("stroke", "green")
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+            .attr("stroke-width", 3)
+            .attr("d", line);
+
+        chart.off("mouseover mousemove").on("mouseover mousemove", function(e) {
+            hoverLine(e, g, chart, data[code]);
+        });
     }
-
-    g.append("path")
-        .datum(ddata)
-        .attr("class", "curve")
-        .attr("fill", "none")
-        .attr("stroke", "green")
-        .attr("stroke-linejoin", "round")
-        .attr("stroke-linecap", "round")
-        .attr("stroke-width", 3)
-        .attr("d", line);
-
-    chart.off("mouseover mousemove").on("mouseover mousemove", function(e) {
-        hoverLine(e, g, chart, data[code]);
-    });
 }
 function hoverLine(e, g, chart, ddata) {
     var parWid = chart.width(),
@@ -395,46 +397,49 @@ function clickFavorite(e) {
     codePost($(e.currentTarget).data("value"), queried);
 }
 function dataInfo(data, code) {
-    var len = data[code]["chart"].length,
-        last = data[code]["chart"][len-1],
-        first = data[code]["chart"][0],
-        change;
+    var len = data[code]["chart"].length;
 
-    if (data[code]["quote"]["calculationPrice"] == "tops") {
-        change = data[code]["quote"]["change"];
-    } else {
-        if (!first["open"] || first["open"] < 0) {
-            var ind = 0;
-            while (ind < len && (!data[code]["chart"][ind]["open"] || data[code]["chart"][ind]["open"] < 0)) {
-                ind++;
+    if (len != 0) {
+        var last = data[code]["chart"][len-1],
+            first = data[code]["chart"][0],
+            change;
+
+        if (data[code]["quote"]["calculationPrice"] == "tops") {
+            change = data[code]["quote"]["change"];
+        } else {
+            if (!first["open"] || first["open"] < 0) {
+                var ind = 0;
+                while (ind < len && (!data[code]["chart"][ind]["open"] || data[code]["chart"][ind]["open"] < 0)) {
+                    ind++;
+                }
+                first = data[code]["chart"][ind];
             }
-            first = data[code]["chart"][ind];
+
+            if (!last["close"] || last["close"] < 0) {
+                while (len > 0 && (!last["close"] || last["close"] < 0)) {
+                    len -= 1;
+                    last = data[code]["chart"][len];
+                }
+            }
+
+            change = (last["close"] - first["open"]);
         }
 
-        if (!last["close"] || last["close"] < 0) {
-            while (len > 0 && (!last["close"] || last["close"] < 0)) {
-                len -= 1;
-                last = data[code]["chart"][len];
-            }
+        var prefix = (change > 0) ? "+" : "";
+
+        if (prefix !== "+") {
+            $(".svg").find(".curve").attr("stroke", "red");
         }
 
-        change = (last["close"] - first["open"]);
+        if (storeObj["favorites"].indexOf(code) != -1) {
+            $(".nameRow .glyphicon").addClass("glyphicon-star").removeClass("glyphicon-star-empty");
+        } else {
+            $(".nameRow .glyphicon").addClass("glyphicon-star-empty").removeClass("glyphicon-star");
+        }
+
+        $(".stockName").text(code);
+        $(".nameRow span").show();
     }
-
-    var prefix = (change > 0) ? "+" : "";
-
-    if (prefix !== "+") {
-        $(".svg").find(".curve").attr("stroke", "red");
-    }
-
-    if (storeObj["favorites"].indexOf(code) != -1) {
-        $(".nameRow .glyphicon").addClass("glyphicon-star").removeClass("glyphicon-star-empty");
-    } else {
-        $(".nameRow .glyphicon").addClass("glyphicon-star-empty").removeClass("glyphicon-star");
-    }
-
-    $(".stockName").text(code);
-    $(".nameRow span").show();
 }
 function decFormat(num) {
     var numRound = Math.round(num * 100) / 100;
