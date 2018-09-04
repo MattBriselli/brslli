@@ -1,6 +1,6 @@
 {
-  "name": "arioso",
-  "version": "0.0.1",
+  "name": "playTradr",
+  "version": "0.1.0",
   "description": "A sample Node.js app using Express 4",
   "engines": {
     "node": "8.9.1"
